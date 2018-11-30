@@ -1,9 +1,9 @@
+require('dotenv').config();
 const axios = require('axios');
 const db = require('../database/dbConfig.js');
-const { server } = require('../server.js');
 const bcrypt = require('bcryptjs');
 
-const { authenticate } = require('./middlewares');
+const { authenticate, generateToken } = require('./middlewares');
 
 module.exports = server => {
   server.post('/api/register', register);
@@ -17,6 +17,7 @@ function rootRoute(req, res) {
   res.send('server is runnin on 3300');
 }
 
+// R E G I S T E R   R O U T E
 function register(req, res) {
   const creds = req.body;
   const hash = bcrypt.hashSync(creds.password);
@@ -30,8 +31,22 @@ function register(req, res) {
     .catch(err => json(err));
 }
 
+// L O G I N   R O U T E
 function login(req, res) {
-  // implement user login
+  const creds = req.body;
+
+  db('users')
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        const token = generateToken(user);
+
+        res.status(200).json({ message: 'Welcome!', token });
+      } else {
+        res.status(401).json({ message: 'Invalid login! ' });
+      }
+    });
 }
 
 function getJokes(req, res) {

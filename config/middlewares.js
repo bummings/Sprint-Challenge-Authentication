@@ -5,6 +5,7 @@ const jwtKey = require('../_secrets/keys').jwtKey;
 // quickly see what this file exports
 module.exports = {
   authenticate,
+  generateToken
 };
 
 // implementation details
@@ -21,7 +22,22 @@ function authenticate(req, res, next) {
     });
   } else {
     return res.status(401).json({
-      error: 'No token provided, must be set on the Authorization Header',
+      error: 'No token provided, must be set on the Authorization Header'
     });
   }
+}
+
+// G E N E R A T E   J W T   T O K E N
+function generateToken(user) {
+  const payload = {
+    subject: user.id,
+    username: user.username
+  };
+
+  const secret = jwtKey;
+  const options = {
+    expiresIn: '1m'
+  };
+
+  return jwt.sign(payload, secret, options);
 }
