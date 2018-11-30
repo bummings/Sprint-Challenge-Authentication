@@ -1,4 +1,3 @@
-require('dotenv').config();
 const axios = require('axios');
 const db = require('../database/dbConfig.js');
 const bcrypt = require('bcryptjs');
@@ -12,7 +11,7 @@ module.exports = server => {
   server.get('/', rootRoute);
 };
 
-// testing root route
+// R O O T   R O U T E
 function rootRoute(req, res) {
   res.send('server is runnin on 3300');
 }
@@ -44,11 +43,12 @@ function login(req, res) {
 
         res.status(200).json({ message: 'Welcome!', token });
       } else {
-        res.status(401).json({ message: 'Invalid login! ' });
+        res.status(401).json({ message: 'Invalid login!' });
       }
     });
 }
 
+// J O K E S   R O U T E
 function getJokes(req, res) {
   axios
     .get('https://safe-falls-22549.herokuapp.com/random_ten')
